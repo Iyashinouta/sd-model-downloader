@@ -9,7 +9,10 @@ Additional Script :
 
 `
 !mkdir /content/stable-diffusion-webui/models/Lora
+
 !mkdir /content/stable-diffusion-webui/models/hypernetworks
+
 !mkdir /content/stable-diffusion-webui/extensions/stable-diffusion-webui-aesthetic-gradients
+
 !mkdir /content/stable-diffusion-webui/extensions/stable-diffusion-webui-aesthetic-gradients/aesthetic_embeddings
 `
