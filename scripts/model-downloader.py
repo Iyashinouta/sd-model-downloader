@@ -17,10 +17,10 @@ def folder(content_type):
     elif content_type == "Lora":
          return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/models/Lora")
 
-def split(downloader_type, url, content_type1, file_name):
+def combine(downloader_type, url, content_type1, file_name):
     return gr.Textbox.update(downloader_type + url + content_type1 + file_name)
 
-def split1(downloader_type, url, content_type1, file_name1, file_name):
+def combine1(downloader_type, url, content_type1, file_name1, file_name):
     return gr.Textbox.update(downloader_type + url + content_type1 + file_name1 + file_name)
 
 def run(command):
@@ -40,9 +40,9 @@ def on_ui_tabs():
                     file_name1 = gr.Textbox(value=" -o ", visible=False)
                 downloader_type = gr.Textbox(value="aria2c --console-log-level=error -c -x 16 -s 16 -k 1M ", visible=False, interactive=False)
                 commands = gr.Textbox(visible=False)
-                url.change(fn=split, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
-                file_name.change(fn=split1, inputs=[downloader_type, url, content_type1, file_name1, file_name], outputs=commands)
-                content_type1.change(fn=split, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
+                url.change(fn=combine, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
+                file_name.change(fn=combine1, inputs=[downloader_type, url, content_type1, file_name1, file_name], outputs=commands)
+                content_type1.change(fn=combine, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
                 out_text = gr.Textbox(label="Result", placeholder="Result")
                 gr.Button("Start Download").click(fn=run, inputs=commands, outputs=out_text)
     return (downloader, "Model Downloader", "downloader"),
