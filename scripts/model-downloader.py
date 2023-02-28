@@ -43,7 +43,9 @@ def on_ui_tabs():
                 url.change(fn=combine, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
                 file_name.change(fn=combine1, inputs=[downloader_type, url, content_type1, file_name1, file_name], outputs=commands)
                 content_type1.change(fn=combine, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
-                out_text = gr.Textbox(label="Result", placeholder="Result")
-                gr.Button("Start Download").click(fn=run, inputs=commands, outputs=out_text)
+                with gr.Row():
+                    download_btn = gr.Button("Start Download")
+                    out_text = gr.Textbox(label="Result", placeholder="Result")
+                    download_btn.click(fn=run, inputs=commands, outputs=out_text)
     return (downloader, "Model Downloader", "downloader"),
 script_callbacks.on_ui_tabs(on_ui_tabs)
