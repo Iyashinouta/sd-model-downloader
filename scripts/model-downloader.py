@@ -17,8 +17,11 @@ def folder(content_type):
     elif content_type == "Lora":
          return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/models/Lora")
 
-def split(downloader_type, url, in_text):
-  return gr.Textbox.update(downloader_type + url + in_text)
+def split(downloader_type, url, content_type1, file_name):
+    return gr.Textbox.update(downloader_type + url + content_type1 + file_name)
+
+def split1(downloader_type, url, content_type1, file_name1, file_name):
+    return gr.Textbox.update(downloader_type + url + content_type1 + file_name1 + file_name)
 
 def run(command):
     out = getoutput(f"{command}")
@@ -28,13 +31,18 @@ def on_ui_tabs():
     with gr.Blocks() as downloader:
         with gr.Group():
             with gr.Box():
-                content_type = gr.Radio(label='Content type:', choices=["Checkpoint","Hypernetwork","TextualInversion/Embedding","AestheticGradient", "VAE", "Lora"])
-                in_text = gr.Textbox(visible=False)
-                content_type.change(fn=folder, inputs=content_type, outputs=in_text)
-                url = gr.Textbox(label="Link Download", max_lines=1, placeholder="Type/Paste URL Here")
+                content_type = gr.Radio(label="Content type:", choices=["Checkpoint","Hypernetwork","TextualInversion/Embedding","AestheticGradient", "VAE", "Lora"])
+                content_type1 = gr.Textbox(visible=False)
+                content_type.change(fn=folder, inputs=content_type, outputs=content_type1)
+                with gr.Row():
+                    url = gr.Textbox(label="Link Download", max_lines=1, placeholder="Type/Paste URL Here")
+                    file_name = gr.Textbox(label="File Name(Required if Download URL from HuggingFace)", placeholder="Type/Input Filename.extension Here", interactive=True)
+                    file_name1 = gr.Textbox(value=" -o ", visible=False)
                 downloader_type = gr.Textbox(value="aria2c --console-log-level=error -c -x 16 -s 16 -k 1M ", visible=False, interactive=False)
                 commands = gr.Textbox(visible=False)
-                url.change(fn=split, inputs=[downloader_type, url, in_text], outputs=commands)
+                url.change(fn=split, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
+                file_name.change(fn=split1, inputs=[downloader_type, url, content_type1, file_name1, file_name], outputs=commands)
+                content_type1.change(fn=split, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
                 out_text = gr.Textbox(label="Result", placeholder="Result")
                 gr.Button("Start Download").click(fn=run, inputs=commands, outputs=out_text)
     return (downloader, "Model Downloader", "downloader"),
