@@ -41,7 +41,7 @@ def on_ui_tabs():
                     file_name = gr.Textbox(label="3. Set File Name(Required if Download URL from HuggingFace)", placeholder="Type/Input Filename.extension Here", interactive=True)
                     file_name1 = gr.Textbox(value=" -o ", visible=False)
                 downloader_type = gr.Textbox(value="aria2c --console-log-level=error -c -x 16 -s 16 -k 1M ", visible=False, interactive=False)
-                commands = gr.Textbox(label="Command", visible=True, interaactive=False, show_progress=True)
+                commands = gr.Textbox(label="Command", visible=True, interactive=False, show_progress=True)
                 url.change(fn=combine, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
                 file_name.change(fn=combine1, inputs=[downloader_type, url, content_type1, file_name1, file_name], outputs=commands)
                 content_type1.change(fn=combine, inputs=[downloader_type, url, content_type1, file_name], outputs=commands)
