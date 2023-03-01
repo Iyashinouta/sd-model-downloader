@@ -5,23 +5,23 @@ from subprocess import getoutput
 
 def folder(content_type):
     if content_type == "Checkpoint":
-       return gr.update(value=" -d /content/stable-diffusion-webui/models/Stable-diffusion")
+       return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/models/Stable-diffusion")
     elif content_type == "Hypernetwork":
-         return gr.update(value=" -d /content/stable-diffusion-webui/models/hypernetworks")
+         return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/models/hypernetworks")
     elif content_type == "TextualInversion/Embedding":
-         return gr.update(value=" -d /content/stable-diffusion-webui/embeddings")
+         return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/embeddings")
     elif content_type == "AestheticGradient":
-         return gr.update(value=" -d /content/stable-diffusion-webui/extensions/stable-diffusion-webui-aesthetic-gradients/aesthetic_embeddings")
+         return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/extensions/stable-diffusion-webui-aesthetic-gradients/aesthetic_embeddings")
     elif content_type == "VAE":
-         return gr.update(value=" -d /content/stable-diffusion-webui/models/VAE")
+         return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/models/VAE")
     elif content_type == "Lora":
-         return gr.update(value=" -d /content/stable-diffusion-webui/models/Lora")
+         return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/models/Lora")
 
 def combine(downloader_type, url, content_type1, file_name):
-    return gr.update(downloader_type + url + content_type1 + file_name)
+    return gr.Textbox.update(downloader_type + url + content_type1 + file_name)
 
 def combine1(downloader_type, url, content_type1, file_name1, file_name):
-    return gr.update(downloader_type + url + content_type1 + file_name1 + file_name)
+    return gr.Textbox.update(downloader_type + url + content_type1 + file_name1 + file_name)
 
 def run(command):
     out = getoutput(f"{command}")
