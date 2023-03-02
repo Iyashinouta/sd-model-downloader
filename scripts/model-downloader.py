@@ -30,8 +30,11 @@ def combine(cmd, url, content_type1, opt):
     return gr.Textbox.update(cmd + url + content_type1 + opt)
     
 def run(command):
-    out = getoutput(f"{command}")
-    return out
+  with os.popen(command) as pipe:
+    for line in pipe:
+      line = line.rstrip()
+      print(line)
+      yield line
 
 def on_ui_tabs():     
     with gr.Blocks() as downloader:
