@@ -23,7 +23,7 @@ def update(file_name, checkbox):
     elif checkbox == "Create new Filename(Recomended)":
          return gr.Textbox(file_name).update(interactive=True)
 
-def rename(checkbox, file_name, cmd, cmd1):
+def rename(file_name, cmd1):
     return gr.Textbox.update(cmd1 + file_name)
 
 def combine(cmd, url, content_type1, opt):
