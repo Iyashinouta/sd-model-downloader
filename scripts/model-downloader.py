@@ -17,7 +17,7 @@ def folder(content_type):
     elif content_type == "Lora":
          return gr.Textbox.update(value=" -d /content/stable-diffusion-webui/models/Lora ")
 
-def update(file_name, checkbox):
+def update(file_name, cmd, checkbox):
     if checkbox == "Use the original Filename from the Source":
        return gr.Textbox(file_name).update(interactive=False)
     elif checkbox == "Create new Filename(Recomended)":
@@ -47,8 +47,8 @@ def on_ui_tabs():
                     download_btn = gr.Button("Start Download")
                 with gr.Row():
                     url = gr.Textbox(label="2. Put Link Download Below", max_lines=1, placeholder="Type/Paste URL Here")
-                    file_name = gr.Textbox(label="3. Create new Filename", placeholder="Type/Paste Filename.extension Here", interactive=False)
-                    cmd = gr.Textbox(value="aria2c --console-log-level=error --content-disposition-default-utf8 -c -x 16 -s 16 -k 1M ", visible=False)
+                    file_name = gr.Textbox(value=".safetensors", label="3. Create new Filename", placeholder="Type/Paste Filename.extension Here", interactive=False)
+                    cmd = gr.Textbox(value="aria2c --console-log-level=error -c -x 16 -s 16 -k 1M ", visible=False)
                     cmd1 = gr.Textbox(value=" -o ", visible=False)
                     checkbox = gr.Radio(label="File Name", choices=["Use the original Filename from the Source","Create new Filename(Recomended)"], type="value", value="Use the original Filename from the Source")
                     checkbox.change(fn=update, inputs=checkbox, outputs=file_name, queue=True)
