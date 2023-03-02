@@ -56,7 +56,7 @@ def on_ui_tabs():
                 commands = gr.Textbox(label="Command", visible=True, interactive=False)
                 content_type1.change(fn=combine, inputs=[cmd, url, content_type1, opt], outputs=commands, queue=True)
                 url.change(fn=combine, inputs=[cmd, url, content_type1, opt], outputs=commands, queue=True)
-                file_name.change(fn=rename, inputs=[cmd, url, content_type1, file_name], outputs=opt, queue=True)
+                file_name.change(fn=rename, inputs=[cmd1, file_name], outputs=opt, queue=True)
                 out_text = gr.Textbox(label="Result", placeholder="Result")
                 download_btn.click(fn=run, inputs=commands, outputs=out_text, queue=True)
 
