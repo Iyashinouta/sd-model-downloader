@@ -18,7 +18,7 @@ def folder(content_type):
 
 def cfn(filename1, filename, opt):
     if filename1 == "Use original Filename from the Source":
-       return gr.Textbox(opt).update(value=" "),  gr.Textbox(filename).update(visible=False)
+       return gr.Textbox(opt).update(value=" "),  gr.Textbox(filename).update(value=" ", visible=False)
     elif filename1 == "Create New Filename(Recomended)":
          return gr.Textbox(opt).update(value=" -o "), gr.Textbox(filename).update(value=" ", visible=True)
 
