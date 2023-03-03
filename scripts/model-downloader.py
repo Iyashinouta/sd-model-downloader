@@ -1,6 +1,5 @@
 import os
 import gradio as gr
-from gradio.blocks import strings
 from modules import scripts, script_callbacks
 
 def folder(content_type):
@@ -51,7 +50,7 @@ def on_ui_tabs():
             opt = gr.Textbox(value=" ", visible=False)
         with gr.Row():
             with gr.Column(scale=2):
-                filename1 = gr.Radio(label="Setting Filename", choices=["Use original Filename from the Source", "Create New Filename(Recomended)"], type="value", value="Use original Filename from rhe Source")
+                filename1 = gr.Radio(label="Setting Filename", choices=["Use original Filename from the Source", "Create New Filename(Recomended)"], type="value", value="Use original Filename from the Source")
         with gr.Row():
             filename = gr.Textbox(label="3. Create new Filename", placeholder="Type/Paste Filename.extension Here", visible=False, interactive=True)
             filename1.change(fn=cfn, inputs=[filename1, opt, filename], outputs=[opt, filename], queue=True)
