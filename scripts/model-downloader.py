@@ -22,9 +22,6 @@ def cfn(url, filename1, filename, opt):
     elif filename1 == "Create New Filename(Recomended)":
          return gr.Textbox(opt).update(value=" -o "), gr.Textbox(filename).update(value=" ", visible=True)
 
-def dwn(content_type1, url, download_btn):
-    return gr.Button(download_btn).update(visible=True)
-    
 def combine(cmd, url, content_type1, opt, filename):
     return gr.Textbox.update(cmd + url + content_type1 + opt + filename)
 
@@ -66,8 +63,7 @@ def on_ui_tabs():
               url.change(fn=inf, inputs=[url, content_type1, filename], outputs=info)
               filename.change(fn=inf, inputs=[url, content_type1, filename], outputs=info)
          with gr.Row():
-              download_btn = gr.Button("Start Download", visible=False)
-              url.change(fn=dwn, inputs=[url, content_type1, download_btn], outputs=download_btn)
+              download_btn = gr.Button("Start Download")
               out_text = gr.Textbox(label="Download Result", placeholder="Result", show_progress=True)
               download_btn.click(fn=run, inputs=[commands], outputs=out_text, show_progress=True)
 
