@@ -67,6 +67,7 @@ def on_ui_tabs():
               out_text = gr.Textbox(label="Download Result", placeholder="Result", show_progress=True)
               download_btn.click(fn=run, inputs=[commands], outputs=out_text, show_progress=True)
 
+    downloader.queue(concurrency_count=5)
     return (downloader, "Model Downloader", "downloader"),
     
 script_callbacks.on_ui_tabs(on_ui_tabs)
