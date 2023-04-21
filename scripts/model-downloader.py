@@ -3,7 +3,7 @@ import gradio as gr
 from modules import script_callbacks
 
 colab = "-d /content"
-sd_path = "/stable-diffusion-webui"
+sd_path = "/A1111-SD"
 
 def folder(content_type):
     if content_type == "Checkpoint":
