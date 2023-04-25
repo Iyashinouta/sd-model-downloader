@@ -19,8 +19,10 @@ def folder(content_type):
          return gr.Textbox.update(value="/extensions/stable-diffusion-webui-aesthetic-gradients/aesthetic_embeddings")
     elif content_type == "VAE":
          return gr.Textbox.update(value="/models/VAE")
-    elif content_type == "LoRA/LyCORIS(LoCon/LoHA)":
+    elif content_type == "LoRA:
          return gr.Textbox.update(value="/models/Lora")
+    elif content_type == "LyCORIS(LoCon/LoHA)":
+         return gr.Textbox.update(value="/models/LyCORIS")
 
 def get_filename_from_url(url=None):
     if url is None:
@@ -59,7 +61,7 @@ def on_ui_tabs():
     with gr.Blocks() as downloader:    
          with gr.Row():
               with gr.Column(scale=2):
-                   content_type = gr.Radio(label="1. Choose Content type", choices=["Checkpoint","Hypernetwork","TextualInversion/Embedding","AestheticGradient", "VAE", "LoRA/LyCORIS(LoCon/LoHA)"])
+                   content_type = gr.Radio(label="1. Choose Content type", choices=["Checkpoint","Hypernetwork","TextualInversion/Embedding","AestheticGradient", "VAE", "LoRA", "LyCORIS(LoCon/LoHA)"])
                    content_type1 = gr.Textbox(visible=False)
                    content_type.change(fn=folder, inputs=content_type, outputs=content_type1)
          with gr.Row():
