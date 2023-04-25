@@ -19,7 +19,7 @@ def folder(content_type):
          return gr.Textbox.update(value="/extensions/stable-diffusion-webui-aesthetic-gradients/aesthetic_embeddings")
     elif content_type == "VAE":
          return gr.Textbox.update(value="/models/VAE")
-    elif content_type == "LoRA:
+    elif content_type == "LoRA":
          return gr.Textbox.update(value="/models/Lora")
     elif content_type == "LyCORIS(LoCon/LoHA)":
          return gr.Textbox.update(value="/models/LyCORIS")
