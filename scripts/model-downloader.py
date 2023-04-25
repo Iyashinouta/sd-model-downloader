@@ -1,11 +1,11 @@
 import os
-import gradio as gr
-from modules import script_callbacks
-from urllib.parse import urlparse
 import requests
 import werkzeug
+import gradio as gr
+from urllib.parse import urlparse
+from modules import script_callbacks
 
-root = "-d /content"
+root = "/content"
 sd_path = "/stable-diffusion-webui"
 
 def folder(content_type):
@@ -29,22 +29,24 @@ def get_filename_from_url(url=None):
         if content_disposition := req.headers.get("Content-Disposition"):
             param, options = werkzeug.http.parse_options_header(content_disposition)
             if param == 'attachment' and (filename := options.get('filename')):
-                return filename
+                f = filename.replace(" ", "_")
+                return f
         path = urlparse(req.url).path
-        name = path[path.rfind('/') + 1:]
+        n = path[path.rfind('/') + 1:]
+        name = n.replace(" ", "_")
         return name
 
-def cfn(filename1, filename):
+def change_filename(filename1, filename):
     if filename1 == "Use original Filename from the Source":
        return gr.Textbox(filename).update(visible=False)
     elif filename1 == "Create New Filename(Recomended)":
          return gr.Textbox(filename).update(visible=True)
 
-def combine(cmd, url, content_type1, opt, filename):
-    return gr.Textbox.update(value=f"{cmd} {url} {root}{sd_path}{content_type1} {opt} {filename}")
+def combine(url, content_type1, filename):
+    return gr.Textbox.update(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {url} -d {root}{sd_path}{content_type1} -o {filename}")
 
-def inf(url, content_type1, filename, info):
-    return gr.Textbox(info).update(value=f"[URL]:  {url}\n[Folder Path]:  {content_type1}\n[File Name]:  {filename}")
+def info_update(url, content_type1, filename, info):
+    return gr.Textbox.update(value=f"[URL]:  {url}\n[Folder Path]:  {content_type1}\n[File Name]:  {filename}")
     
 def run(command):
     with os.popen(command) as pipe:
@@ -62,25 +64,23 @@ def on_ui_tabs():
                    content_type.change(fn=folder, inputs=content_type, outputs=content_type1)
          with gr.Row():
               url = gr.Textbox(label="2. Put Link Download Below", max_lines=1, placeholder="Type/Paste URL Here")
-              opt = gr.Textbox(value="-o", visible=False)
          with gr.Row():
               with gr.Column(scale=2):
                    filename1 = gr.Radio(label="Setting Filename", choices=["Use original Filename from the Source", "Create New Filename(Recomended)"], type="value", value="Use original Filename from the Source")
          with gr.Row():
               filename = gr.Textbox(label="3. Create new Filename", placeholder="Type/Paste Filename.extension Here", visible=False, interactive=True)
-              filename1.change(fn=cfn, inputs=[filename1, filename], outputs=filename)
+              filename1.change(fn=change_filename, inputs=[filename1, filename], outputs=filename)
          with gr.Row():
-              cmd = gr.Textbox(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M", visible=False)
-              commands = gr.Textbox(label="Information Command", visible=False, interactive=False)
+              commands = gr.Textbox(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M", label="Information Command", visible=False, interactive=False)
               info = gr.Textbox(value="[URL]:\n[Folder Path]:\n[File Name]:", label="Information", placeholder="Make sure to Check properly whether everything is Correct", lines=3, interactive=False)
          with gr.Row():
-              content_type1.change(fn=combine, inputs=[cmd, url, content_type1, opt, filename], outputs=commands)
-              url.change(fn=combine, inputs=[cmd, url, content_type1, opt, filename], outputs=commands)
+              content_type1.change(fn=combine, inputs=[url, content_type1, filename], outputs=commands)
+              url.change(fn=combine, inputs=[url, content_type1, filename], outputs=commands)
               url.change(fn=get_filename_from_url, inputs=url, outputs=filename)
-              filename.change(fn=combine, inputs=[cmd, url, content_type1, opt, filename], outputs=commands)
-              content_type1.change(fn=inf, inputs=[url, content_type1, filename], outputs=info)
-              url.change(fn=inf, inputs=[url, content_type1, filename], outputs=info)
-              filename.change(fn=inf, inputs=[url, content_type1, filename], outputs=info)
+              filename.change(fn=combine, inputs=[url, content_type1, filename], outputs=commands)
+              content_type1.change(fn=info_update, inputs=[url, content_type1, filename], outputs=info)
+              url.change(fn=info_update, inputs=[url, content_type1, filename], outputs=info)
+              filename.change(fn=info_update, inputs=[url, content_type1, filename], outputs=info)
          with gr.Row():
               download_btn = gr.Button("Start Download")
               out_text = gr.Textbox(label="Download Result", placeholder="Result", show_progress=True)
