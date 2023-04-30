@@ -17,25 +17,25 @@ lora_path = "/models/Lora"
 lycoris_path = "/models/LyCORIS"
 
 if not os.path.exists(f"{root}{sd_path}{checkpoint_path}"):
-   os.mkdir(f"{root}{sd_path}{checkpoint_path}")
+   os.makedirs(f"{root}{sd_path}{checkpoint_path}")
    print ("Model Downloader: Creating Checkpoint Folder")
 if not os.path.exists(f"{root}{sd_path}{hypernetwork_path}"):
-   os.mkdir(f"{root}{sd_path}{hypernetwork_path}")
+   os.makedirs(f"{root}{sd_path}{hypernetwork_path}")
    print ("Model Downloader: Creating Hypernetwork Folder")
 if not os.path.exists(f"{root}{sd_path}{embedding_path}"):
-   os.mkdir(f"{root}{sd_path}{embedding_path}")
+   os.makedirs(f"{root}{sd_path}{embedding_path}")
    print ("Model Downloader: Creating TextualInversion/Embeddings Folder")
 if not os.path.exists(f"{root}{sd_path}{aestheticembedding_path}"):
-   os.mkdir(f"{root}{sd_path}{aestheticembedding_path}")
+   os.makedirs(f"{root}{sd_path}{aestheticembedding_path}")
    print ("Model Downloader: Creating AestheticGradient Folder")
 if not os.path.exists(f"{root}{sd_path}{vae_path}"):
-   os.mkdir(f"{root}{sd_path}{vae_path}")
+   os.makedirs(f"{root}{sd_path}{vae_path}")
    print ("Model Downloader: Creating VAE Folder")
 if not os.path.exists(f"{root}{sd_path}{lora_path}"):
-   os.mkdir(f"{root}{sd_path}{lora_path}")
+   os.makedirs(f"{root}{sd_path}{lora_path}")
    print ("Model Downloader: Creating LoRA Folder")
 if not os.path.exists(f"{root}{sd_path}{lycoris_path}"):
-   os.mkdir(f"{root}{sd_path}{lycoris_path}")
+   os.makedirs(f"{root}{sd_path}{lycoris_path}")
    print ("Model Downloader: Creating LyCORIS Folder")
 else:
      pass
