@@ -13,4 +13,6 @@ example:<br>
 # This Extension Only Work on Google Colab
 
 To install it, clone the repo into the `extensions` directory and run colab:<br>
-`!git clone https://github.com/Iyashinouta/sd-model-downloader /content/stable-diffusion-webui/extensions/sd-model-downloader`
+`!git clone https://github.com/Iyashinouta/sd-model-downloader /content/stable-diffusion-webui/extensions/sd-model-downloader`<br>
+or Install from SD Webui:<br>
+install from URL, and Paste Link `https://github.com/Iyashinouta/sd-model-downloader`
