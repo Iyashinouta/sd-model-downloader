@@ -6,7 +6,7 @@ if u want to use on your local (not colab)
 change directory ("root" and "sd_path") in  model-downloader.py
 
 example:<br>
-`root = "C:\"`<br>
+`root = "C:/" or "D:/" etc`<br>
 `sd_path = "your_sd_repo_folder/"`
 
 
