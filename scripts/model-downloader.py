@@ -16,6 +16,7 @@ vae_path = "/models/VAE"
 lora_path = "/models/Lora"
 lycoris_path = "/models/LyCORIS"
 
+print("Model Downloader: Checking Directories...")
 if not os.path.exists(f"{root}{sd_path}{checkpoint_path}"):
    os.makedirs(f"{root}{sd_path}{checkpoint_path}")
    print ("Model Downloader: Creating Checkpoint Folder")
@@ -38,7 +39,8 @@ if not os.path.exists(f"{root}{sd_path}{lycoris_path}"):
    os.makedirs(f"{root}{sd_path}{lycoris_path}")
    print ("Model Downloader: Creating LyCORIS Folder")
 else:
-     pass
+     pass 
+print("Model Downloader: all Directories already Created.")
 
 def folder(content_type):
     if content_type == "Checkpoint":
