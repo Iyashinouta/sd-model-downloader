@@ -5,7 +5,7 @@ SD Web UI Extension to Download Model from URL
   <h1>Update fix/features</h>
   </b></summary>
   
-  - May 12 2023<br>
+  - May 12, 2023<br>
     - bug fix : path fix<br>
       > from `"/path"` (manual) change to `os.getcwd()` to automatic search sd-webui path<br>
     - adding features : submit url/filename<br>
