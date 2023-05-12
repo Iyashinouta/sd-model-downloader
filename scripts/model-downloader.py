@@ -5,8 +5,7 @@ import gradio as gr
 from urllib.parse import urlparse
 from modules import script_callbacks
 
-root = "/content"
-sd_path = "/stable-diffusion-webui"
+sd_path = os.getcwd()
 
 checkpoint_path = "/models/Stable-diffusion"
 hypernetwork_path = "/models/hypernetworks"
@@ -17,26 +16,26 @@ lora_path = "/models/Lora"
 lycoris_path = "/models/LyCORIS"
 
 print("Model Downloader: Checking Directories...")
-if not os.path.exists(f"{root}{sd_path}{checkpoint_path}"):
-   os.makedirs(f"{root}{sd_path}{checkpoint_path}")
+if not os.path.exists(f"{sd_path}{checkpoint_path}"):
+   os.makedirs(f"{sd_path}{checkpoint_path}")
    print ("Model Downloader: Creating Checkpoint Folder")
-if not os.path.exists(f"{root}{sd_path}{hypernetwork_path}"):
-   os.makedirs(f"{root}{sd_path}{hypernetwork_path}")
+if not os.path.exists(f"{sd_path}{hypernetwork_path}"):
+   os.makedirs(f"{sd_path}{hypernetwork_path}")
    print ("Model Downloader: Creating Hypernetwork Folder")
-if not os.path.exists(f"{root}{sd_path}{embedding_path}"):
-   os.makedirs(f"{root}{sd_path}{embedding_path}")
+if not os.path.exists(f"{sd_path}{embedding_path}"):
+   os.makedirs(f"{sd_path}{embedding_path}")
    print ("Model Downloader: Creating TextualInversion/Embeddings Folder")
-if not os.path.exists(f"{root}{sd_path}{aestheticembedding_path}"):
-   os.makedirs(f"{root}{sd_path}{aestheticembedding_path}")
+if not os.path.exists(f"{sd_path}{aestheticembedding_path}"):
+   os.makedirs(f"{sd_path}{aestheticembedding_path}")
    print ("Model Downloader: Creating AestheticGradient Folder")
-if not os.path.exists(f"{root}{sd_path}{vae_path}"):
-   os.makedirs(f"{root}{sd_path}{vae_path}")
+if not os.path.exists(f"{sd_path}{vae_path}"):
+   os.makedirs(f"{sd_path}{vae_path}")
    print ("Model Downloader: Creating VAE Folder")
-if not os.path.exists(f"{root}{sd_path}{lora_path}"):
-   os.makedirs(f"{root}{sd_path}{lora_path}")
+if not os.path.exists(f"{sd_path}{lora_path}"):
+   os.makedirs(f"{sd_path}{lora_path}")
    print ("Model Downloader: Creating LoRA Folder")
-if not os.path.exists(f"{root}{sd_path}{lycoris_path}"):
-   os.makedirs(f"{root}{sd_path}{lycoris_path}")
+if not os.path.exists(f"{sd_path}{lycoris_path}"):
+   os.makedirs(f"{sd_path}{lycoris_path}")
    print ("Model Downloader: Creating LyCORIS Folder")
 else:
      pass 
@@ -79,7 +78,7 @@ def change_filename(filename1, filename):
          return gr.Textbox(filename).update(visible=True)
 
 def combine(url, content_type1, filename):
-    return gr.Textbox.update(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {url} -d {root}{sd_path}{content_type1} -o {filename}")
+    return gr.Textbox.update(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {url} -d {sd_path}{content_type1} -o {filename}")
 
 def info_update(url, content_type1, filename, info):
     return gr.Textbox.update(value=f"[URL]:  {url}\n[Folder Path]:  {content_type1}\n[File Name]:  {filename}")
