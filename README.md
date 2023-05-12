@@ -9,7 +9,7 @@ SD Web UI Extension to Download Model from URL
     - bug fix : path fix<br>
       > from `"/path"` (manual) change to `os.getcwd()` to automatic search sd-webui path<br>
     - adding features : submit url/filename<br>
-      > when you click enter on url/filename, it will start downloading
+      > when you click enter on url/filename textbox, it will start downloading
   
 </details>
   
