@@ -84,8 +84,12 @@ def change_filename(filename1, filename):
 
 def combine(url, content_type1, filename):
     global pathname
+    global modelurl
+    global modelname
     pathname = os.path.splitext(filename)[0]
-    return gr.Textbox.update(value=f"aria2c -c -x 16 -s 16 -k 1M {url} -d {sd_path}{content_type1}/{pathname} -o {filename}")
+    modelurl = "" + url
+    modelname = "" + filename
+    return gr.Textbox.update(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M --input-file model.txt -d {sd_path}{content_type1}/{pathname}")
 
 def info_update(url, content_type1, filename, info):
     return gr.Markdown.update(f"<p><b>URL</b>:  {url} <br> <b>Folder Path</b>:  {content_type1} <br> <b>File Name</b>:  {filename} <br> <b>Preview Model</b>:</p>")
@@ -111,22 +115,21 @@ def show_download(filename):
 success = "Download Completed, Saved in:"
 exist = "File Already Exist in:"
 
-def run(command, content_type1, filename):
-    if not os.path.exists(f"{sd_path}{content_type1}/{pathname}/{filename}"):
-       os.popen(command)
-       return success
-    else:
-         return exist
-
-def run_image(image_url, content_type1, filename):
+def run(command, url, content_type1, filename):
     imgname = f"{pathname}.preview.png"
-    if not os.path.exists(f"{sd_path}{content_type1}/{pathname}/{imgname}"):
-       os.popen(f"aria2c {img_url} -d {sd_path}{content_type1}/{pathname} -o {imgname}")
-       print(f"{success} {sd_path}{content_type1}/{pathname}")
-       return f"{success} {sd_path}{content_type1}/{pathname}"
+    complete1 = f"SUCCESS: {success} [{sd_path}{content_type1}/{pathname}]"
+    complete2 = f"ERROR: {exist} [{sd_path}{content_type1}/{pathname}]"
+    with open("model.txt", "w") as w:
+         w.write(f"{modelurl}\n out={modelname}\n{img_url}\n out={imgname}")
+    if not os.path.exists(f"{sd_path}{content_type1}/{pathname}"):
+       line1 = os.popen(command)
+       for l in line1:
+           l = l.rstrip()
+           yield complete1
+       print(complete1)
     else:
-         print(f"{exist} {sd_path}{content_type1}/{pathname}")
-         return f"{exist} {sd_path}{content_type1}/{pathname}"
+         yield complete2
+         print(complete2)
 
 def on_ui_tabs():
     with gr.Blocks() as downloader:    
@@ -162,11 +165,8 @@ def on_ui_tabs():
                    out_text = gr.Textbox(label="Download Result", placeholder="Result", visible=False, show_progress=True)
                    filename.change(show_download, filename, [download_btn, out_text])
                    download_btn.click(run, commands, out_text)
-                   download_btn.click(run_image, [url, content_type1, filename], out_text)
                    url.submit(run, commands, out_text)
-                   url.submit(run_image, [url, content_type1, filename], out_text)
                    filename.submit(run, commands, out_text)
-                   filename.submit(run_image, [url, content_type1, filename], out_text)
 
     downloader.queue(concurrency_count=5)
     return (downloader, "Model Downloader", "downloader"),
