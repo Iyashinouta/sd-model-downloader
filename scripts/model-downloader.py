@@ -92,7 +92,7 @@ def combine(url, content_type1, filename):
     return gr.Textbox.update(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M --input-file model.txt -d {sd_path}{content_type1}/{pathname}")
 
 def info_update(url, content_type1, filename, info):
-    return gr.Markdown.update(f"<p><b>URL</b>:  {url} <br> <b>Folder Path</b>:  {content_type1} <br> <b>File Name</b>:  {filename} <br> <b>Preview Model</b>:</p>")
+    return gr.Markdown.update(f"<font size=2><p><b>URL</b>:  {url} <br> <b>Folder Path</b>:  {content_type1} <br> <b>File Name</b>:  {filename} <br> <b>Preview Model</b>:</p>")
 
 def get_image_from_url(url):
     convert = url.replace("download/models", "v1/model-versions")
@@ -110,7 +110,10 @@ def get_image_from_url(url):
            return gr.Image.update(value=f'{sd_path}/html/card-no-preview.png')
 
 def show_download(filename):
-    return gr.Button.update(visible=True, variant="primary"), gr.Textbox.update(value= "Ready", visible=True)
+    a = gr.Button.update(visible=True, variant="primary")
+    b = gr.Textbox.update(value= "Ready", visible=True)
+    c = gr.Markdown.update(visible=True)
+    return a, b, c
 
 def back (download_button):
     return gr.Button.update(visible=True, variant="secondary")
@@ -152,7 +155,7 @@ def on_ui_tabs():
               commands = gr.Textbox(value=f"aria2c -c -x 16 -s 16 -k 1M", label="Information Command", visible=False, interactive=False)
          with gr.Row():
               with gr.Column():
-                   info = gr.Markdown(value="<p><b>URL</b>: <br> <b>Folder Path</b>: <br> <b>File Name</b>:<br> <b>Preview Model</b>:</p>", label="Information")
+                   info = gr.Markdown(value="<font size=2><p><b>URL</b>: <br> <b>Folder Path</b>: <br> <b>File Name</b>:<br> <b>Preview Model</b>:</p>", label="Information")
                    image = gr.Image(value=f"{sd_path}/html/card-no-preview.png", show_label=False)
                    image.style(width=256, height=384)
               content_type1.change(combine, [url, content_type1, filename], commands)
@@ -166,7 +169,13 @@ def on_ui_tabs():
               with gr.Column():
                    download_btn = gr.Button("Start Download", visible=False, variant="secondary")
                    out_text = gr.Textbox(label="Download Result", placeholder="Result", visible=False, show_progress=True)
-                   filename.change(show_download, filename, [download_btn, out_text])
+                   github = gr.Markdown(
+                    """
+                    <center><font size=2>Having Issue? | <a href=https://github.com/Iyashinouta/sd-model-downloader/issues>Report Here</a>
+                    """,
+                    visible=False
+                   )
+                   filename.change(show_download, filename, [download_btn, out_text, github])
                    download_btn.click(back, download_btn, download_btn)
                    download_btn.click(run, commands, out_text)
                    url.submit(back, url, download_btn)
