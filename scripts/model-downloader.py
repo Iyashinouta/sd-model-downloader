@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 import werkzeug
 import gradio as gr
@@ -6,7 +7,7 @@ from urllib.parse import urlparse
 from modules import script_callbacks
 
 sd_path = os.getcwd()
-
+default = "Set as Default"
 checkpoint_path = "/models/Stable-diffusion"
 hypernetwork_path = "/models/hypernetworks"
 embedding_path = "/embeddings"
@@ -59,17 +60,21 @@ def folder(content_type):
 
 def get_filename_from_url(url=None):
     if url is None:
-       return None        
-    with requests.get(url, stream=True) as req:
-        if content_disposition := req.headers.get("Content-Disposition"):
-            param, options = werkzeug.http.parse_options_header(content_disposition)
-            if param == 'attachment' and (filename := options.get('filename')):
-                f = filename.replace(" ", "_")
-                return f
-        path = urlparse(req.url).path
-        n = path[path.rfind('/') + 1:]
-        name = n.replace(" ", "_")
-        return name
+       return None
+    else:
+         try:
+             with requests.get(url, stream=True) as req:
+                  if content_disposition := req.headers.get("Content-Disposition"):
+                     param, options = werkzeug.http.parse_options_header(content_disposition)
+                     if param == 'attachment' and (filename := options.get('filename')):
+                        f = filename.replace(" ", "_")
+                        return f
+                  path = urlparse(req.url).path
+                  n = path[path.rfind('/') + 1:]
+                  name = n.replace(" ", "_")
+                  return name
+         except:
+                return default
 
 def change_filename(filename1, filename):
     if filename1 == "Use original Filename from the Source":
@@ -78,17 +83,50 @@ def change_filename(filename1, filename):
          return gr.Textbox(filename).update(visible=True)
 
 def combine(url, content_type1, filename):
-    return gr.Textbox.update(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M {url} -d {sd_path}{content_type1} -o {filename}")
+    global pathname
+    pathname = os.path.splitext(filename)[0]
+    return gr.Textbox.update(value=f"aria2c -c -x 16 -s 16 -k 1M {url} -d {sd_path}{content_type1}/{pathname} -o {filename}")
 
 def info_update(url, content_type1, filename, info):
-    return gr.Textbox.update(value=f"[URL]:  {url}\n[Folder Path]:  {content_type1}\n[File Name]:  {filename}")
-    
-def run(command):
-    with os.popen(command) as pipe:
-         for line in pipe:
-             line = line.rstrip()
-             print(line)
-             yield line    
+    return gr.Markdown.update(f"<p><b>URL</b>:  {url} <br> <b>Folder Path</b>:  {content_type1} <br> <b>File Name</b>:  {filename} <br> <b>Preview Model</b>:</p>")
+
+def get_image_from_url(url):
+    convert = url.replace("download/models", "v1/model-versions")
+    civitai = "https://image.civitai.com/"
+    try:
+        with requests.get(convert) as req:
+             j = req.json()
+             r = json.dumps(j)
+             start = r.find(civitai) + len(civitai)
+             end = r.find('"', start)
+             global img_url
+             img_url = f'{civitai}{r[start:end]}'
+             return gr.Image.update(value=img_url)
+    except:
+           return gr.Image.update(value=f'{sd_path}/html/card-no-preview.png')
+
+def show_download(filename):
+    return gr.Button.update(visible=True), gr.Textbox.update(value= "Ready", visible=True)
+
+success = "Download Completed, Saved in:"
+exist = "File Already Exist in:"
+
+def run(command, content_type1, filename):
+    if not os.path.exists(f"{sd_path}{content_type1}/{pathname}/{filename}"):
+       os.popen(command)
+       return success
+    else:
+         return exist
+
+def run_image(image_url, content_type1, filename):
+    imgname = f"{pathname}.preview.png"
+    if not os.path.exists(f"{sd_path}{content_type1}/{pathname}/{imgname}"):
+       os.popen(f"aria2c {img_url} -d {sd_path}{content_type1}/{pathname} -o {imgname}")
+       print(f"{success} {sd_path}{content_type1}/{pathname}")
+       return f"{success} {sd_path}{content_type1}/{pathname}"
+    else:
+         print(f"{exist} {sd_path}{content_type1}/{pathname}")
+         return f"{exist} {sd_path}{content_type1}/{pathname}"
 
 def on_ui_tabs():
     with gr.Blocks() as downloader:    
@@ -99,29 +137,36 @@ def on_ui_tabs():
                    content_type.change(folder, content_type, content_type1)
          with gr.Row():
               url = gr.Textbox(label="2. Put Link Download Below", max_lines=1, placeholder="Type/Paste URL Here")
+              url.style(show_copy_button=True)
          with gr.Row():
-              with gr.Column(scale=2):
-                   filename1 = gr.Radio(label="Setting Filename", choices=["Use original Filename from the Source", "Create New Filename(Recomended)"], type="value", value="Use original Filename from the Source")
+              filename1 = gr.Radio(label="Setting Filename", choices=["Use original Filename from the Source", "Create New Filename(Recomended)"], type="value", value="Use original Filename from the Source")
          with gr.Row():
               filename = gr.Textbox(label="3. Create new Filename", placeholder="Type/Paste Filename.extension Here", visible=False, interactive=True)
               filename1.change(change_filename, [filename1, filename], filename)
+              commands = gr.Textbox(value=f"aria2c -c -x 16 -s 16 -k 1M", label="Information Command", visible=False, interactive=False)
          with gr.Row():
-              commands = gr.Textbox(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M", label="Information Command", visible=False, interactive=False)
-              info = gr.Textbox(value="[URL]:\n[Folder Path]:\n[File Name]:", label="Information", placeholder="Make sure to Check properly whether everything is Correct", lines=3, interactive=False)
-         with gr.Row():
+              with gr.Column():
+                   info = gr.Markdown(value="<p><b>URL</b>: <br> <b>Folder Path</b>: <br> <b>File Name</b>:<br> <b>Preview Model</b>:</p>", label="Information")
+                   image = gr.Image(value=f"{sd_path}/html/card-no-preview.png", show_label=False)
+                   image.style(width=256, height=384)
               content_type1.change(combine, [url, content_type1, filename], commands)
               url.change(combine, [url, content_type1, filename], commands)
               url.change(get_filename_from_url, url, filename)
+              url.change(get_image_from_url, url, image)
               filename.change(combine, [url, content_type1, filename], commands)
               content_type1.change(info_update, [url, content_type1, filename], info)
               url.change(info_update, [url, content_type1, filename], info)
               filename.change(info_update, [url, content_type1, filename], info)
-         with gr.Row():
-              download_btn = gr.Button("Start Download")
-              out_text = gr.Textbox(label="Download Result", placeholder="Result", show_progress=True)
-              download_btn.click(run, commands, out_text)
-              url.submit(run, commands, out_text)
-              filename.submit(run, commands, out_text)
+              with gr.Column():
+                   download_btn = gr.Button("Start Download", visible=False, variant="primary")
+                   out_text = gr.Textbox(label="Download Result", placeholder="Result", visible=False, show_progress=True)
+                   filename.change(show_download, filename, [download_btn, out_text])
+                   download_btn.click(run, commands, out_text)
+                   download_btn.click(run_image, [url, content_type1, filename], out_text)
+                   url.submit(run, commands, out_text)
+                   url.submit(run_image, [url, content_type1, filename], out_text)
+                   filename.submit(run, commands, out_text)
+                   filename.submit(run_image, [url, content_type1, filename], out_text)
 
     downloader.queue(concurrency_count=5)
     return (downloader, "Model Downloader", "downloader"),
