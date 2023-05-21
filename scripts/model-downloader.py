@@ -110,10 +110,13 @@ def get_image_from_url(url):
            return gr.Image.update(value=f'{sd_path}/html/card-no-preview.png')
 
 def show_download(filename):
-    return gr.Button.update(visible=True), gr.Textbox.update(value= "Ready", visible=True)
+    return gr.Button.update(visible=True, variant="primary"), gr.Textbox.update(value= "Ready", visible=True)
 
-success = "Download Completed, Saved in:"
-exist = "File Already Exist in:"
+def back (download_button):
+    return gr.Button.update(visible=True, variant="secondary")
+
+success = "Download Completed, Saved to"
+exist = "File Already Exist in"
 
 def run(command, url, content_type1, filename):
     imgname = f"{pathname}.preview.png"
@@ -121,15 +124,15 @@ def run(command, url, content_type1, filename):
     complete2 = f"ERROR: {exist} [{sd_path}{content_type1}/{pathname}]"
     with open("model.txt", "w") as w:
          w.write(f"{modelurl}\n out={modelname}\n{img_url}\n out={imgname}")
-    if not os.path.exists(f"{sd_path}{content_type1}/{pathname}"):
-       line1 = os.popen(command)
-       for l in line1:
-           l = l.rstrip()
-           yield complete1
-       print(complete1)
+    if os.path.exists(f"{sd_path}{content_type1}/{pathname}"):
+       yield complete2
+       print(complete2)
     else:
-         yield complete2
-         print(complete2)
+         line1 = os.popen(command)
+         for l in line1:
+             l = l.rstrip()
+             yield complete1
+         print(complete1)
 
 def on_ui_tabs():
     with gr.Blocks() as downloader:    
@@ -161,11 +164,14 @@ def on_ui_tabs():
               url.change(info_update, [url, content_type1, filename], info)
               filename.change(info_update, [url, content_type1, filename], info)
               with gr.Column():
-                   download_btn = gr.Button("Start Download", visible=False, variant="primary")
+                   download_btn = gr.Button("Start Download", visible=False, variant="secondary")
                    out_text = gr.Textbox(label="Download Result", placeholder="Result", visible=False, show_progress=True)
                    filename.change(show_download, filename, [download_btn, out_text])
+                   download_btn.click(back, download_btn, download_btn)
                    download_btn.click(run, commands, out_text)
+                   url.submit(back, url, download_btn)
                    url.submit(run, commands, out_text)
+                   filename.submit(back, filename, download_btn)
                    filename.submit(run, commands, out_text)
 
     downloader.queue(concurrency_count=5)
