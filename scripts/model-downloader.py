@@ -86,22 +86,24 @@ def combine(url, content_type1, filename):
     global pathname
     global modelurl
     global modelname
+    global downloadpath
     pathname = os.path.splitext(filename)[0]
     modelurl = "" + url
     modelname = "" + filename
+    downloadpath = "" + content_type1
     return gr.Textbox.update(value=f"aria2c --console-log-level=error -c -x 16 -s 16 -k 1M --input-file model.txt -d {sd_path}{content_type1}/{pathname}")
 
 def info_update(url, content_type1, filename, info):
     return gr.Markdown.update(f"<font size=2><p><b>URL</b>:  {url} <br> <b>Folder Path</b>:  {content_type1} <br> <b>File Name</b>:  {filename} <br> <b>Preview Model</b>:</p>")
 
 def get_image_from_url(url):
-    convert = url.replace("download/models", "v1/model-versions")
+    convert = "" + url.replace("download/models", "v1/model-versions")
     civitai = "https://image.civitai.com/"
-    if not url == "https://civitai.com/":
+    if not modelurl.find("https://civitai.com/")!=-1:
        return gr.Image.update(value=f"{sd_path}/html/card-no-preview.png")
     else:
          try:
-             with requests.get(convert) as req:
+             with requests.get(convert, stream=True) as req:
                   j = req.json()
                   r = json.dumps(j)
                   start = r.find(civitai) + len(civitai)
@@ -124,24 +126,24 @@ def back (download_button):
 success = "Download Completed, Saved to"
 exist = "File Already Exist in"
 
-def run(command, image, url, content_type1, filename):
+def run(command):
     imgname = f"{pathname}.preview.png"
-    complete1 = f"SUCCESS: {success} [{sd_path}{content_type1}/{pathname}]"
-    complete2 = f"ERROR: {exist} [{sd_path}{content_type1}/{pathname}]"
+    complete1 = f"SUCCESS: {success} [{sd_path}{downloadpath}/{pathname}]"
+    complete2 = f"ERROR: {exist} [{sd_path}{downloadpath}/{pathname}]"
     with open("model.txt", "w") as w:
-         if not url == "https://civitai.com/":
+         if not modelurl.find("https://civitai.com/")!=-1:
             w.write(f"{modelurl}\n out={modelname}")
          else:
               w.write(f"{modelurl}\n out={modelname}\n{img_url}\n out={imgname}")
-    if os.path.exists(f"{sd_path}{content_type1}/{pathname}"):
-       yield complete2
-       print(complete2)
+    if not os.path.exists(f"{sd_path}{downloadpath}/{pathname}"):
+       line1 = os.popen(command)
+       for l in line1:
+           l = l.rstrip()
+           yield complete1
+       print(complete1)
     else:
-         line1 = os.popen(command)
-         for l in line1:
-             l = l.rstrip()
-             yield complete1
-         print(complete1)
+         yield complete2
+         print(complete2)
 
 def on_ui_tabs():
     with gr.Blocks() as downloader:    
