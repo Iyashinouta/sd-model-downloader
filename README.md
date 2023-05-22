@@ -5,6 +5,10 @@ SD Web UI Extension to Download Model from URL
   <h1>Update fix/features</h>
   </b></summary>
   
+  - May 22, 2023<br>
+    - bug fix : getting error while downloading Huggingface<br>
+      > adding `if, else` statement for Huggingface<br>
+  
   - May 21, 2023<br>
     - adding features : show image preview model and save to thumbnail<br>
       > image will show below information<br>
