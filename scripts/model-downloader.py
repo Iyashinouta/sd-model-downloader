@@ -97,17 +97,20 @@ def info_update(url, content_type1, filename, info):
 def get_image_from_url(url):
     convert = url.replace("download/models", "v1/model-versions")
     civitai = "https://image.civitai.com/"
-    try:
-        with requests.get(convert) as req:
-             j = req.json()
-             r = json.dumps(j)
-             start = r.find(civitai) + len(civitai)
-             end = r.find('"', start)
-             global img_url
-             img_url = f'{civitai}{r[start:end]}'
-             return gr.Image.update(value=img_url)
-    except:
-           return gr.Image.update(value=f'{sd_path}/html/card-no-preview.png')
+    if not url == "https://civitai.com/":
+       return gr.Image.update(value=f"{sd_path}/html/card-no-preview.png")
+    else:
+         try:
+             with requests.get(convert) as req:
+                  j = req.json()
+                  r = json.dumps(j)
+                  start = r.find(civitai) + len(civitai)
+                  end = r.find('"', start)
+                  global img_url
+                  img_url = f"{civitai}{r[start:end]}"
+                  return gr.Image.update(value=img_url)
+         except:
+                return gr.Image.update(value=f"{sd_path}/html/card-no-preview.png")
 
 def show_download(filename):
     a = gr.Button.update(visible=True, variant="primary")
@@ -121,12 +124,15 @@ def back (download_button):
 success = "Download Completed, Saved to"
 exist = "File Already Exist in"
 
-def run(command, url, content_type1, filename):
+def run(command, image, url, content_type1, filename):
     imgname = f"{pathname}.preview.png"
     complete1 = f"SUCCESS: {success} [{sd_path}{content_type1}/{pathname}]"
     complete2 = f"ERROR: {exist} [{sd_path}{content_type1}/{pathname}]"
     with open("model.txt", "w") as w:
-         w.write(f"{modelurl}\n out={modelname}\n{img_url}\n out={imgname}")
+         if not url == "https://civitai.com/":
+            w.write(f"{modelurl}\n out={modelname}")
+         else:
+              w.write(f"{modelurl}\n out={modelname}\n{img_url}\n out={imgname}")
     if os.path.exists(f"{sd_path}{content_type1}/{pathname}"):
        yield complete2
        print(complete2)
