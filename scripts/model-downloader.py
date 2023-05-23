@@ -151,7 +151,6 @@ def on_ui_tabs():
               with gr.Column(scale=2):
                    content_type = gr.Radio(label="1. Choose Content type", choices=["Checkpoint","Hypernetwork","TextualInversion/Embedding","AestheticGradient", "VAE", "LoRA", "LyCORIS(LoCon/LoHA)"])
                    content_type1 = gr.Textbox(visible=False)
-                   content_type.change(folder, content_type, content_type1)
          with gr.Row():
               url = gr.Textbox(label="2. Put Link Download Below", max_lines=1, placeholder="Type/Paste URL Here")
               url.style(show_copy_button=True)
@@ -159,13 +158,26 @@ def on_ui_tabs():
               filename1 = gr.Radio(label="Setting Filename", choices=["Use original Filename from the Source", "Create New Filename(Recomended)"], type="value", value="Use original Filename from the Source")
          with gr.Row():
               filename = gr.Textbox(label="3. Create new Filename", placeholder="Type/Paste Filename.extension Here", visible=False, interactive=True)
-              filename1.change(change_filename, [filename1, filename], filename)
-              commands = gr.Textbox(value=f"aria2c -c -x 16 -s 16 -k 1M", label="Information Command", visible=False, interactive=False)
+              commands = gr.Textbox(visible=False, interactive=False)
+         with gr.Row():
+              download_btn = gr.Button("Start Download", visible=False, variant="secondary")
+              out_text = gr.Textbox(label="Download Result", placeholder="Result", visible=False, show_progress=True)
          with gr.Row():
               with gr.Column():
-                   info = gr.Markdown(value="<font size=2><p><b>URL</b>: <br> <b>Folder Path</b>: <br> <b>File Name</b>:<br> <b>Preview Model</b>:</p>", label="Information")
+                   info = gr.Markdown(value="<font size=2><p><b>Model Information :</b><br><b>URL</b>: <br> <b>Folder Path</b>: <br> <b>File Name</b>:<br> <b>Preview Model</b>:</p>", label="Information")
+              with gr.Column():
                    image = gr.Image(value=f"{sd_path}/html/card-no-preview.png", show_label=False)
                    image.style(width=256, height=384)
+         with gr.Row():
+              github = gr.Markdown(
+               """
+               <center><font size=2>Having Issue? | <a href=https://github.com/Iyashinouta/sd-model-downloader/issues>Report Here</a>
+               """,
+               visible=False
+              )
+
+              filename1.change(change_filename, filename1, filename)
+              content_type.change(folder, content_type, content_type1)
               content_type1.change(combine, [url, content_type1, filename], commands)
               url.change(combine, [url, content_type1, filename], commands)
               url.change(get_filename_from_url, url, filename)
@@ -174,22 +186,13 @@ def on_ui_tabs():
               content_type1.change(info_update, [url, content_type1, filename], info)
               url.change(info_update, [url, content_type1, filename], info)
               filename.change(info_update, [url, content_type1, filename], info)
-              with gr.Column():
-                   download_btn = gr.Button("Start Download", visible=False, variant="secondary")
-                   out_text = gr.Textbox(label="Download Result", placeholder="Result", visible=False, show_progress=True)
-                   github = gr.Markdown(
-                    """
-                    <center><font size=2>Having Issue? | <a href=https://github.com/Iyashinouta/sd-model-downloader/issues>Report Here</a>
-                    """,
-                    visible=False
-                   )
-                   filename.change(show_download, filename, [download_btn, out_text, github])
-                   download_btn.click(back, download_btn, download_btn)
-                   download_btn.click(run, commands, out_text)
-                   url.submit(back, url, download_btn)
-                   url.submit(run, commands, out_text)
-                   filename.submit(back, filename, download_btn)
-                   filename.submit(run, commands, out_text)
+              filename.change(show_download, filename, [download_btn, out_text, github])
+              download_btn.click(back, download_btn, download_btn)
+              download_btn.click(run, commands, out_text)
+              url.submit(back, url, download_btn)
+              url.submit(run, commands, out_text)
+              filename.submit(back, filename, download_btn)
+              filename.submit(run, commands, out_text)
 
     downloader.queue(concurrency_count=5)
     return (downloader, "Model Downloader", "downloader"),
