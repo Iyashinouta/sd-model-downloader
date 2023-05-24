@@ -14,7 +14,7 @@ SD Web UI Extension to Download Model from URL
       > image will show below information<br>
     - fix : re-organize ui<br>
       > `Start Download` button and `Outputs` textbox is hidden until `Information` fully appear<br>
-      > move `Start Download` button next to `Information`<br>
+      > move `Start Download` button before the `Information`<br>
       > fix `outputs` textbox to be simple and accurate<br>
     
   - May 12, 2023<br>
