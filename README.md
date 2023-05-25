@@ -28,6 +28,7 @@ SD Web UI Extension to Download Model from URL
 # This Extension Work on AUTO1111 SD Webui
 
 To install it, clone the repo into the `extensions` directory and run colab:<br>
-`!git clone https://github.com/Iyashinouta/sd-model-downloader /content/stable-diffusion-webui/extensions/sd-model-downloader`<br>
+`!git clone https://github.com/Iyashinouta/sd-model-downloader /content/stable-diffusion-webui/extensions/sd-model-downloader`
+
 or Install from SD Webui:<br>
-install from URL, and Paste Link `https://github.com/Iyashinouta/sd-model-downloader`
+install from URL, and Paste Link https://github.com/Iyashinouta/sd-model-downloader
