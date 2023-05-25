@@ -5,6 +5,9 @@ SD Web UI Extension to Download Model from URL
   <h1>Update fix/features</h>
   </b></summary>
   
+  - May 26, 2023<br>
+    - optimizing issue : fix performance when reading information<br>
+      > maybe still have bug, but im sure this update more fast than before<br>
   - May 22, 2023<br>
     - bug fix : getting error while downloading Huggingface<br>
       > adding `if, else` statement for Huggingface<br>
