@@ -143,9 +143,8 @@ def on_ui_tabs():
          with gr.Row():
               url = gr.Textbox(label="2. Put Link Download Below", max_lines=1, placeholder="Type/Paste URL Here")
               url.style(show_copy_button=True)
-         with gr.Row():
+         with gr.Row(visible=False):
               filename1 = gr.Radio(label="Setting Filename(please choose original, we're getting bug on 'Create New Filename')", choices=["Use original Filename from the Source(Recomended)", "Create New Filename"], type="value", value="Use original Filename from the Source(Recomended)")
-         with gr.Row():
               name = gr.Textbox(label="3. Create new Filename", placeholder="Type/Paste Filename.extension Here", visible=False, interactive=False)
          with gr.Row():
               download_btn = gr.Button("Start Download", visible=False, variant="secondary")
