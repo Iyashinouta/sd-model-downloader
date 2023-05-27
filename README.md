@@ -13,8 +13,11 @@ install from URL, and Paste Link https://github.com/Iyashinouta/sd-model-downloa
   <h1>Update fix/features</h>
   </b></summary>
   
+  - May 28, 2023<br>
+    - adding features : save to <a href=https://github.com/kohya-ss/sd-webui-additional-networks>AddNet Extension</a><br>
+    - optimizing fix : more stable, though in latest version on webui<br>
   - May 26, 2023<br>
-    - optimizing issue : fix performance when reading information<br>
+    - optimizing fix : fix performance when reading information<br>
   - May 22, 2023<br>
     - bug fix : getting error while downloading Huggingface<br>
   
