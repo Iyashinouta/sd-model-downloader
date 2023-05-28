@@ -5,12 +5,12 @@ from urllib.parse import urlparse
 from modules import script_callbacks
 
 sd_path = os.getcwd()
-ext = f"/extensions"
+ext = "/extensions"
 no_prev = f"{sd_path}/html/card-no-preview.png"
 checkpoint_path = "/models/Stable-diffusion"
 hypernetwork_path = "/models/hypernetworks"
 embedding_path = "/embeddings"
-aestheticembedding_path = "{ext}/stable-diffusion-webui-aesthetic-gradients/aesthetic_embeddings"
+aestheticembedding_path = f"{ext}/stable-diffusion-webui-aesthetic-gradients/aesthetic_embeddings"
 vae_path = "/models/VAE"
 lora_path = "/models/Lora"
 lycoris_path = "/models/LyCORIS"
