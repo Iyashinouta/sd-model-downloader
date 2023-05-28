@@ -140,7 +140,7 @@ def on_ui_tabs():
                       addnet = gr.Checkbox(label="save to Additional Networks", value=False, visible=True)
                       print("Model Downloader detects Additional Networks, creating checkbox for AddNet.")
                    else:
-                        addnet = gr.Checkbox.update(value=False, visible=False)
+                        addnet = gr.Checkbox(value=False, visible=False)
          with gr.Row():
               url = gr.Textbox(label="2. Put Link Download Below", max_lines=1, placeholder="Type/Paste URL Here")
               url.style(show_copy_button=True)
