@@ -1,42 +1,69 @@
 import os
 import requests
+import argparse
 import gradio as gr
 from urllib.parse import urlparse
 from modules import script_callbacks
 
 sd_path = os.getcwd()
 ext = "/extensions"
-no_prev = f"{sd_path}/html/card-no-preview.png"
-checkpoint_path = "/models/Stable-diffusion"
-hypernetwork_path = "/models/hypernetworks"
-embedding_path = "/embeddings"
-aestheticembedding_path = f"{ext}/stable-diffusion-webui-aesthetic-gradients/aesthetic_embeddings"
-vae_path = "/models/VAE"
-lora_path = "/models/Lora"
-lycoris_path = "/models/LyCORIS"
+no_prev = None
+addnet_path = None
 
-print("Model Downloader v1.0.4")
+try:
+    from modules.paths_internal import data_path, models_path, extensions_dir
+except ImportError:
+       from modules.paths import data_path, models_path
+       extensions_dir = os.path.join(data_path, 'extensions')
+
+parser = argparse.ArgumentParser()
+parser.add_argument("--ckpt-dir", type=str, default=os.path.join(models_path, 'Stable-diffusion'))
+parser.add_argument("--vae-dir", type=str, default=os.path.join(models_path, 'VAE'))
+parser.add_argument("--embeddings-dir", type=str, default=os.path.join(data_path, 'embeddings'))
+parser.add_argument("--hypernetwork-dir", type=str, default=os.path.join(models_path, 'hypernetworks'))
+parser.add_argument("--lora-dir", type=str, default=os.path.join(models_path, 'Lora'))
+parser.add_argument("--lycoris-dir", type=str, default=os.path.join(models_path, 'LyCORIS'))
+args, _ = parser.parse_known_args()
+
+if not os.path.exists(f"{sd_path}/html/card-no-preview.png"):
+   try:
+       os.system(f"wget -P {data_path}/html https://github.com/AUTOMATIC1111/stable-diffusion-webui/raw/master/html/card-no-preview.png  >/dev/null 2>&1")
+   except:
+          pass
+   no_prev = f"{data_path}/html/card-no-preview.png"
+else:
+     no_prev = f"{sd_path}/html/card-no-preview.png"
+if not os.path.exists(f"{sd_path}{ext}/sd-webui-additional-networks"):
+   addnet_path = f"{extensions_dir}/sd-webui-additional-networks"
+else:
+     addnet_path = f"{sd_path}{ext}/sd-webui-additional-networks"
+
+checkpoint_path = args.ckpt_dir
+vae_path = args.vae_dir
+embedding_path = args.embeddings_dir
+hypernetwork_path = args.hypernetwork_dir
+lora_path = args.lora_dir
+lycoris_path = args.lycoris_dir
+
+print(f"Model Downloader v1.0.5")
 print("Checking Directories...")
-if not os.path.exists(f"{sd_path}{checkpoint_path}"):
-   os.makedirs(f"{sd_path}{checkpoint_path}")
+if not os.path.exists(checkpoint_path):
+   os.makedirs(checkpoint_path)
    print ("Creating Checkpoint Folder")
-if not os.path.exists(f"{sd_path}{hypernetwork_path}"):
-   os.makedirs(f"{sd_path}{hypernetwork_path}")
+if not os.path.exists(hypernetwork_path):
+   os.makedirs(hypernetwork_path)
    print ("Creating Hypernetwork Folder")
-if not os.path.exists(f"{sd_path}{embedding_path}"):
-   os.makedirs(f"{sd_path}{embedding_path}")
+if not os.path.exists(embedding_path):
+   os.makedirs(embedding_path)
    print ("Creating TextualInversion/Embeddings Folder")
-if not os.path.exists(f"{sd_path}{aestheticembedding_path}"):
-   os.makedirs(f"{sd_path}{aestheticembedding_path}")
-   print ("Creating AestheticGradient Folder")
-if not os.path.exists(f"{sd_path}{vae_path}"):
-   os.makedirs(f"{sd_path}{vae_path}")
+if not os.path.exists(vae_path):
+   os.makedirs(vae_path)
    print ("Creating VAE Folder")
-if not os.path.exists(f"{sd_path}{lora_path}"):
-   os.makedirs(f"{sd_path}{lora_path}")
+if not os.path.exists(lora_path):
+   os.makedirs(lora_path)
    print ("Creating LoRA Folder")
-if not os.path.exists(f"{sd_path}{lycoris_path}"):
-   os.makedirs(f"{sd_path}{lycoris_path}")
+if not os.path.exists(lycoris_path):
+   os.makedirs(lycoris_path)
    print ("Creating LyCORIS Folder")
 else:
      pass
@@ -57,9 +84,6 @@ def folder(content_type):
          return downloadpath
     elif content_type == "TextualInversion/Embedding":
          downloadpath = embedding_path
-         return downloadpath
-    elif content_type == "AestheticGradient":
-         downloadpath = aestheticembedding_path
          return downloadpath
     elif content_type == "VAE":
          downloadpath = vae_path
@@ -88,7 +112,15 @@ def get_data_from_url(url, image, download_btn, out_text, info):
            modelname = metadata1.replace(" ", "_")
            namepath = os.path.splitext(metadata1)[0]
            imgname = f"{namepath}.preview.png"
-           return gr.Image(image).update(value=imgurl), gr.Button(download_btn).update(visible=True, variant="primary"), gr.Textbox(out_text).update(value= "Ready", visible=True), gr.Markdown(info).update(f"<font size=2><p><b>Model Information :</b><br><b>URL</b>:  {url} <br> <b>Folder Path</b>:  {downloadpath}/{namepath} <br> <b>File Name</b>:  {modelname} <br> <b>Preview Model</b>:</p>")
+           markdown2 = f"""
+                       <font size=2><p>
+                       <b>Model Information :</b><br>
+                       <b>URL :</b>   {url}<br>
+                       <b>Folder Path :</b>   {downloadpath}/{namepath}<br>
+                       <b>File Name :</b>   {modelname}
+                       </p>
+                       """
+           return gr.Image(image).update(value=imgurl), gr.Button(download_btn).update(visible=True, variant="primary"), gr.Textbox(out_text).update("Ready", visible=True), gr.Markdown(info).update(markdown2)
         else:
              parse = urlparse(url).path
              metadata1 = parse[parse.rfind('/') + 1:]
@@ -96,16 +128,32 @@ def get_data_from_url(url, image, download_btn, out_text, info):
              namepath = os.path.splitext(metadata1)[0]
              imgurl = no_prev
              imgname = f"{namepath}.preview.png"
-             return gr.Image(image).update(value=imgurl), gr.Button(download_btn).update(visible=True, variant="primary"), gr.Textbox(out_text).update(value= "Ready", visible=True), gr.Markdown(info).update(f"<font size=2><p><b>Model Information :</b><br><b>URL</b>:  {url} <br> <b>Folder Path</b>:  {downloadpath}/{namepath} <br> <b>File Name</b>:  {modelname} <br> <b>Preview Model</b>:</p>")
+             markdown2 = f"""
+                         <font size=2><p>
+                         <b>Model Information :</b><br>
+                         <b>URL :</b>   {url}<br>
+                         <b>Folder Path :</b>   {downloadpath}/{namepath}<br>
+                         <b>File Name :</b>   {modelname}
+                         </p>
+                         """
+             return gr.Image(image).update(value=imgurl), gr.Button(download_btn).update(visible=True, variant="primary"), gr.Textbox(out_text).update("Ready", visible=True), gr.Markdown(info).update(markdown2)
     except:
+           markdown2 = f"""
+                       <font size=2><p>
+                       <b>Model Information :</b><br>
+                       <b>URL :</b>   {url}<br>
+                       <b>Folder Path :</b>   {downloadpath}/{namepath}<br>
+                       <b>File Name :</b>   {modelname}
+                       </p>
+                       """
            imgurl = no_prev
-           return gr.Image(image).update(value=imgurl), gr.Button(download_btn).update(visible=True, variant="primary"), gr.Textbox(out_text).update(value= "Ready", visible=True), gr.Markdown(info).update(f"<font size=2><p><b>Model Information :</b><br><b>URL</b>:  {url} <br> <b>Folder Path</b>:  {downloadpath}/{namepath} <br> <b>File Name</b>:  {modelname} <br> <b>Preview Model</b>:</p>")
+           return gr.Image(image).update(value=imgurl), gr.Button(download_btn).update(visible=True, variant="primary"), gr.Textbox(out_text).update("Ready", visible=True), gr.Markdown(info).update(markdown2)
 
 def start_downloading(download_btn, url, addnet):
     complete1 = f"SUCCESS: Download Completed, Saved to\n"
     complete2 = f"ERROR: File Already Exist in\n"
-    target1 = f"{sd_path}{downloadpath}/{namepath}"
-    target2 = f"{sd_path}{ext}/sd-webui-additional-networks/models/lora/{namepath}"
+    target1 = f"{downloadpath}/{namepath}"
+    target2 = f"{addnet_path}/models/lora/{namepath}"
     final_target = None
     if addnet:
        final_target = target2
@@ -134,32 +182,64 @@ def on_ui_tabs():
     with gr.Blocks() as downloader:
          with gr.Row():
               with gr.Column():
-                   content_type = gr.Radio(label="1. Choose Content type", choices=["Checkpoint","Hypernetwork","TextualInversion/Embedding","AestheticGradient", "VAE", "LoRA", "LyCORIS(LoCon/LoHA)"])
+                   content_type = gr.Radio(
+                                           label="1. Choose Content type",
+                                           choices=["Checkpoint",
+                                                    "Hypernetwork",
+                                                    "TextualInversion/Embedding",
+                                                    "VAE", 
+                                                    "LoRA", 
+                                                    "LyCORIS(LoCon/LoHA)"
+                                                    ]
+                                           )
                    addnet = None
-                   if os.path.exists(f"{sd_path}{ext}/sd-webui-additional-networks/models/lora"):
+                   if os.path.exists(addnet_path):
                       addnet = gr.Checkbox(label="save to Additional Networks", value=False, visible=True)
                       print("Model Downloader detects Additional Networks, creating checkbox for AddNet.")
                    else:
                         addnet = gr.Checkbox(value=False, visible=False)
          with gr.Row():
-              url = gr.Textbox(label="2. Put Link Download Below", max_lines=1, placeholder="Type/Paste URL Here")
+              url = gr.Textbox(
+                               label="2. Put Link Download Below",
+                               max_lines=1, placeholder="Type/Paste URL Here"
+                               )
               url.style(show_copy_button=True)
          with gr.Row():
-              download_btn = gr.Button("Start Download", visible=False, variant="secondary")
-              out_text = gr.Textbox(label="Download Result", placeholder="Result", visible=False, show_progress=True)
+              download_btn = gr.Button(
+                                       "Start Download",
+                                       visible=False,
+                                       variant="secondary"
+                                       )
+              out_text = gr.Textbox(
+                                    label="Download Result",
+                                    placeholder="Result",
+                                    visible=False,
+                                    show_progress=True
+                                    )
          with gr.Row():
               with gr.Column():
-                   info = gr.Markdown(value="<font size=2><p><b>Model Information :</b><br><b>URL</b>: <br> <b>Folder Path</b>: <br> <b>File Name</b>:<br> <b>Preview Model</b>:</p>", label="Information")
+                   markdown1 = """
+                               <font size=2><p>
+                               <b>Model Information :</b><br>
+                               <b>URL :</b><br>
+                               <b>Folder Path :</b><br>
+                               <b>File Name :</b>
+                               </p>
+                               """
+                   info = gr.Markdown(markdown1)
               with gr.Column():
+                   preview = gr.Markdown("""<font size=2><b>Preview Model :</b>""")
                    image = gr.Image(value=no_prev, show_label=False)
                    image.style(width=256, height=384)
          with gr.Row():
               github = gr.Markdown(
-               """
-               <center><font size=2>Having Issue? | <a href=https://github.com/Iyashinouta/sd-model-downloader/issues>Report Here</a><br>
-               <center><font size=1>Model Downloader v1.0.4
-               """
-              )
+                                   """
+                                   <center><font size=2>Having Issue? |
+                                   <a href=https://github.com/Iyashinouta/sd-model-downloader/issues>
+                                   Report Here</a><br>
+                                   <center><font size=1>Model Downloader v1.0.5
+                                   """
+                                   )
               content_type.change(folder, content_type)
               url.change(get_data_from_url, url, [image, download_btn, out_text, info])
               download_btn.click(start_downloading, [download_btn, url, addnet], out_text)
