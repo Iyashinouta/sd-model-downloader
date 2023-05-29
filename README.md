@@ -13,6 +13,9 @@ install from URL, and Paste Link https://github.com/Iyashinouta/sd-model-downloa
   <h1>Update fix/features</h>
   </b></summary>
   
+  - May 30, 2023<br>
+    - bug fix : path fix<br>
+    - bug fix : downloading `card-no-preview.png` if not exist
   - May 28, 2023<br>
     - adding features : save to <a href=https://github.com/kohya-ss/sd-webui-additional-networks>AddNet Extension</a><br>
     - optimizing fix : more stable, though in latest version on webui<br>
@@ -22,7 +25,7 @@ install from URL, and Paste Link https://github.com/Iyashinouta/sd-model-downloa
     - bug fix : getting error while downloading Huggingface<br>
   
   - May 21, 2023<br>
-    - adding features : show image preview model and save to thumbnail<br>
+    - adding feature : show image preview model and save to thumbnail<br>
     - fix : re-organize ui<br>
 
   - May 12, 2023<br>
