@@ -16,10 +16,12 @@ install from URL, and Paste Link https://github.com/Iyashinouta/sd-model-downloa
   ![preview](https://raw.githubusercontent.com/Iyashinouta/sd-model-downloader/main/images/instructions.png)
   
 </details>
-  
-<details><summary><b>
-  <h1>Update fix/features</h>
-  </b></summary>
+
+# Update fix/features
+
+<details><summary>
+  See Releases for more details
+  </summary>
   
   - May 30, 2023<br>
     - bug fix : path fix<br>
@@ -41,4 +43,3 @@ install from URL, and Paste Link https://github.com/Iyashinouta/sd-model-downloa
     - bug fix : path fix<br>
   
 </details>
-See Releases for more details
