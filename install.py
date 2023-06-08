@@ -1,8 +1,27 @@
+import os
 import launch
 import platform
+import subprocess
 
-if platform.system() == "Windows":
-   if not launch.is_installed("aria2"):
-      launch.run_python("apt -y install -qq aria2", "requirements for Model Downloader")
-   if not launch.is_installed("wget"):
-      launch.run_pip("install wget", "requirements for Model Downloader")
+def checking():
+    try:
+        subprocess.run("aria2c")
+        return True
+    except FileNotFoundError:
+           return False
+
+if platform.system() == "Linux":
+   if not checking():
+      launch.run("apt -y install -qq aria2", "Installing requirements for Model Downloader")
+   else:
+        pass
+elif platform.system() == "Darwin":
+     if not checking():
+        launch.run("brew install aria2", "Installing requirements for Model Downloader")
+     else:
+          pass
+elif platform.system() == "Windows":
+     if not checking():
+        print("Model Downloader required aria2c, see tutorial https://www.youtube.com/watch?v=JnWQST4ay_E")
+     else:
+          pass
