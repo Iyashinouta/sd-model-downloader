@@ -5,7 +5,7 @@ import subprocess
 
 def checking():
     try:
-        subprocess.run("aria2c")
+        subprocess.run("aria2c", stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
         return True
     except FileNotFoundError:
            return False
