@@ -22,7 +22,10 @@ install from URL, and Paste Link https://github.com/Iyashinouta/sd-model-downloa
 <details><summary>
   See Releases for more details
   </summary>
-  
+
+  - June 14, 2023<br>
+    - bug fix = fix `NoneType` variables from <a href=https://github.com/Iyashinouta/sd-model-downloader/issues/8#issue-1751439968>YKefasu<br>
+    - rollback features = Filename features finally back again<br>
   - May 30, 2023<br>
     - bug fix : path fix<br>
     - bug fix : downloading `card-no-preview.png` if not exist
