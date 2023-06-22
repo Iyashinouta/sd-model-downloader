@@ -87,6 +87,8 @@ def folder(content_type):
          downloadpath = lycoris_path
     elif content_type == 'ControlNet Model':
          downloadpath = controlnet_model_path
+    else:
+         downloadpath = 'Unset, Please Choose your Content Type'
     return downloadpath
 
 def get_filename_from_url(url):
