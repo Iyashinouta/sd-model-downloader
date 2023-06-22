@@ -12,7 +12,7 @@ def checking():
 
 if platform.system() == "Linux":
    if not checking():
-      launch.run("apt -y install -qq aria2", "Installing requirements for Model Downloader")
+      launch.run("apt update && apt -y install -qq aria2", "Installing requirements for Model Downloader")
    else:
         pass
 elif platform.system() == "Darwin":
