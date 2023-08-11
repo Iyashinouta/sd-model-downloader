@@ -47,7 +47,7 @@ lycoris_path = args.lyco_dir
 controlnet_path = os.path.join(extensions_dir, 'sd-webui-controlnet')
 controlnet_model_path = os.path.join(controlnet_path, 'models')
 
-print(f'Model Downloader v1.0.7')
+print(f'Model Downloader v1.0.8 Pre')
 print('Checking Directories...')
 if not os.path.exists(checkpoint_path):
    os.makedirs(checkpoint_path)
@@ -151,13 +151,13 @@ def get_data_from_url(url, downloadpath):
     info = gr.Markdown.update(markdown2)
     return filename, image, download_btn, out_text, info
 
-def start_downloading(downloader_type, download_btn, url, downloadpath, filename, addnet, logging):
+def start_downloading(downloader_type, download_btn, url, downloadpath, filename, addnet, logging, new_folder, preview):
     complete1 = f'SUCCESS: Download Completed, Saved to\n'
     complete2 = f'ERROR: File Already Exist in\n'
     complete3 = 'ERROR: Something went wrong, please try again later'
     path, extension = get_filename_from_url(url)
     imgname = f'{filename}.preview.png'
-    if url.find('https://civitai.com/')!=-1:
+    if new_folder:
        target1 = os.path.join(downloadpath, filename)
        target2 = os.path.join(addnet_path, 'models', 'lora', filename)
     else:
@@ -168,17 +168,20 @@ def start_downloading(downloader_type, download_btn, url, downloadpath, filename
        final_target = target2
     else:
          final_target = target1
-    command = f'aria2c -c -x 16 -s 16 -k 1M --input-file model.txt -d {final_target}'
-    with open('model.txt', 'w') as w:
-         if not url.find('https://civitai.com/')!=-1:
-            w.write(f'{url}\n out={filename}{extension}')
-         else:
-              imgurl = get_image_from_url(url)
-              w.write(f'{url}\n out={filename}{extension}\n{imgurl}\n out={imgname}')
     back(download_btn)
-    if not os.path.exists(os.path.join(final_target, filename)):
+    if not os.path.exists(os.path.join(final_target, f'{filename}{extension}')):
        try:
            if downloader_type == 'aria2':
+              command = f'aria2c -c -x 16 -s 16 -k 1M --input-file model.txt -d {final_target}'
+              with open('model.txt', 'w') as w:
+                   if not url.find('https://civitai.com/')!=-1:
+                      w.write(f'{url}\n out={filename}{extension}')
+                   else:
+                        if preview:
+                           imgurl = get_image_from_url(url)
+                           w.write(f'{url}\n out={filename}{extension}\n{imgurl}\n out={imgname}')
+                        else:
+                             w.write(f'{url}\n out={filename}{extension}')
               if logging:
                  line = subprocess.getoutput(command)
                  yield line
@@ -190,23 +193,30 @@ def start_downloading(downloader_type, download_btn, url, downloadpath, filename
                        yield f'{complete1}{final_target}'
                    print(f'{complete1}{final_target}')
            elif downloader_type == 'requests':
+                if new_folder:
+                   os.makedirs(final_target, exist_ok=True)
+                else:
+                     pass
                 download = requests.get(url, allow_redirects=True)
                 if not url.find('https://civitai.com/')!=-1:
                    with open(os.path.join(final_target, f'{filename}{extension}'), 'wb') as f:
                         f.write(download.content)
                 else:
-                     os.makedirs(os.path.join(final_target))
-                     imgurl = get_image_from_url(url)
-                     with open(os.path.join(final_target, f'{filename}{extension}'), 'wb') as f:
-                          f.write(download.content)
-                     img_download = requests.get(str(imgurl), allow_redirects=True)
-                     with open(os.path.join(final_target, imgname), 'wb') as img:
-                          img.write(img_download.content)
+                     if preview:
+                        imgurl = get_image_from_url(url)
+                        img_download = requests.get(str(imgurl), allow_redirects=True)
+                        with open(os.path.join(final_target, f'{filename}{extension}'), 'wb') as f:
+                             f.write(download.content)
+                        with open(os.path.join(final_target, imgname), 'wb') as img:
+                             img.write(img_download.content)
+                     else:
+                          with open(os.path.join(final_target, f'{filename}{extension}'), 'wb') as f:
+                               f.write(download.content)
                 yield f'{complete1}{final_target}'
-                print(f'{complete1}{final_target}') 
-       except Exception:
-               yield f'{Exception}\n{complete3}'
-               print(f'{Exception}\n{complete3}')
+                print(f'{complete1}{final_target}')
+       except Exception as e:
+               yield f'{e}\n{complete3}'
+               print(f'{e}\n{complete3}')
     else:
          yield f'{complete2}{final_target}'
          print(f'{complete2}{final_target}')
@@ -267,6 +277,8 @@ def on_ui_tabs():
                    logging = gr.Checkbox(label='turn on log', value=False)
                    changename = gr.Checkbox(label='Change Filename', value=False)
                    custompath = gr.Checkbox(label='Custom Download Path', value=False)
+                   preview = gr.Checkbox(label='Download Preview', value=True)
+                   new_folder = gr.Checkbox(label='Create New Folder', value=False)
          with gr.Row():
               with gr.Column():
                    download_btn = gr.Button(
@@ -291,7 +303,7 @@ def on_ui_tabs():
                                            '''
                                            )
                    with gr.Column():
-                        preview = gr.Markdown('''<font size=2><b>Preview Model :</b>''')
+                        prev_markdown = gr.Markdown('''<font size=2><b>Preview Model :</b>''')
                         image = gr.Image(value=no_prev, show_label=False)
                         image.style(width=156, height=234)
          with gr.Row():
@@ -300,7 +312,7 @@ def on_ui_tabs():
                                    <center><font size=2>Having Issue? |
                                    <a href=https://github.com/Iyashinouta/sd-model-downloader/issues>
                                    Report Here</a><br>
-                                   <center><font size=1>Model Downloader v1.0.7
+                                   <center><font size=1>Model Downloader v1.0.8 Pre
                                    '''
                                    )
          content_type.change(folder, content_type, downloadpath)
@@ -329,7 +341,9 @@ def on_ui_tabs():
                              downloadpath,
                              filename,
                              addnet,
-                             logging
+                             logging,
+                             new_folder,
+                             preview
                              ],
                              out_text
                             )
@@ -342,7 +356,9 @@ def on_ui_tabs():
                      downloadpath,
                      filename,
                      addnet,
-                     logging
+                     logging,
+                     new_folder,
+                     preview
                      ],
                      out_text
                     )
