@@ -47,7 +47,7 @@ lycoris_path = args.lyco_dir
 controlnet_path = os.path.join(extensions_dir, 'sd-webui-controlnet')
 controlnet_model_path = os.path.join(controlnet_path, 'models')
 
-print(f'Model Downloader v1.0.8 Pre')
+print(f'Model Downloader v1.0.8')
 print('Checking Directories...')
 if not os.path.exists(checkpoint_path):
    os.makedirs(checkpoint_path)
@@ -172,7 +172,7 @@ def start_downloading(downloader_type, download_btn, url, downloadpath, filename
     if not os.path.exists(os.path.join(final_target, f'{filename}{extension}')):
        try:
            if downloader_type == 'aria2':
-              command = f'aria2c -c -x 16 -s 16 -k 1M --input-file model.txt -d {final_target}'
+              command = f'aria2c --console-log-level=error -c -x 16 -s 16 -k 1M --input-file model.txt -d {final_target}'
               with open('model.txt', 'w') as w:
                    if not url.find('https://civitai.com/')!=-1:
                       w.write(f'{url}\n out={filename}{extension}')
@@ -183,6 +183,7 @@ def start_downloading(downloader_type, download_btn, url, downloadpath, filename
                         else:
                              w.write(f'{url}\n out={filename}{extension}')
               if logging:
+                 command.replace(' --console-log-level=error', ' ')
                  line = subprocess.getoutput(command)
                  yield line
                  print(line)
@@ -312,7 +313,7 @@ def on_ui_tabs():
                                    <center><font size=2>Having Issue? |
                                    <a href=https://github.com/Iyashinouta/sd-model-downloader/issues>
                                    Report Here</a><br>
-                                   <center><font size=1>Model Downloader v1.0.8 Pre
+                                   <center><font size=1>Model Downloader v1.0.8
                                    '''
                                    )
          content_type.change(folder, content_type, downloadpath)
