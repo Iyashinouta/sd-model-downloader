@@ -23,7 +23,8 @@ parser.add_argument('--vae-dir', type=str, default=os.path.join(models_path, 'VA
 parser.add_argument('--embeddings-dir', type=str, default=os.path.join(data_path, 'embeddings'))
 parser.add_argument('--hypernetwork-dir', type=str, default=os.path.join(models_path, 'hypernetworks'))
 parser.add_argument('--lora-dir', type=str, default=os.path.join(models_path, 'Lora'))
-parser.add_argument('--lyco-dir', type=str, default=os.path.join(models_path, 'LyCORIS'))
+#Starting from stable-diffusion-webui version 1.5.0 - version 1.6.1, the lycoris extension is no longer required, All its features have been integrated into the original LoRA extension, LyCORIS models can now be used as if there were regular LoRA models.
+parser.add_argument('--lyco-dir', type=str, default=os.path.join(models_path, 'Lora'))
 args, _ = parser.parse_known_args()
 
 if not os.path.exists(os.path.join(sd_path, 'html', 'card-no-preview.png')):
